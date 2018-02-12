@@ -21,15 +21,16 @@ public class ServerConnessioneTCP {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
         // porta del server maggiore di 1024 
         int port=2000;
         //oggetto ServerSocket necessario per accettare richieste dal client
         ServerSocket sSocket = null;
         //oggetto da usare per realizzare la connessione TCP
         Socket connection;
-
-        while(true){
+        
+        
+        void connetti(){
+        
             try{
                 
                 // il server si mette in ascolto sulla porta voluta
@@ -39,13 +40,37 @@ public class ServerConnessioneTCP {
                 connection = sSocket.accept();
                 System.out.println("Connessione stabilita!");
                 System.out.println("Socket server: " + connection.getLocalSocketAddress());
-                System.out.println("Socket client: " + connection.getRemoteSocketAddress()); 
+                System.out.println("Socket client: " + connection.getRemoteSocketAddress());  
             }
                catch(IOException e){
-                   System.err.println("Errore di I/O!");
+                   System.err.println("Errore di I/O nell'avvio!");
             }
+      }
+        
+        void messaggi(){
+            try{
+             //lettura messaggio
+                DataInputStream inputStream = new DataInputStream(connection.getInputStream());
+                String message = inputStream.readUTF();
+                System.out.println("Messaggio: " + message);
+                
+                
+                
+            //scrittura risposta
+            DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
+            InputStreamReader reader = new InputStreamReader (System.in);
+            BufferedReader br = new BufferedReader(reader);
+            System.out.println("Scrivi il messaggio da inviare in risposta:");
+            message = br.readLine();
+            outputStream.writeUTF(message);
+            outputStream.flush();
             
-            //chiusura della connessione con il client
+            } catch(IOException ex){
+                System.err.println("Errore di I/O nella lettura!");
+            }
+        }
+        void chiudi(){
+             //chiusura della connessione con il client
             try {
                 if (sSocket!=null) sSocket.close();
             } catch (IOException ex) {
@@ -53,5 +78,4 @@ public class ServerConnessioneTCP {
             }
             System.out.println("Connessione chiusa!");
         }
-      }
 }
